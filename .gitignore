@@ -1,0 +1,17 @@
+data/
+BrainEigenmodes/
+mvtk/
+results/
+unused/
+taskdata_255/
+*.pkl
+*.csv
+tmp/
+connectome_agg/
+onetime_usage_scripts/
+subjectlists/
+test*
+tmp*
+reconstruct_data.py
+reconstruct_data2.py
+reconstruct_data3.py
