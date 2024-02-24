@@ -21,7 +21,7 @@ The repository contains the following key scripts:
 
 ## Dependencies
 
-Some of the work is a direct python translation of the [provided matlab code]([https://www.nature.com/articles/s41586-023-06098-1](https://github.com/NSBLab/BrainEigenmodes)) for the Nature-paper [Geometric Constraints on Human Brain Function](https://www.nature.com/articles/s41586-023-06098-1)
+Some of the work is a direct python translation of the [provided matlab code]((https://github.com/NSBLab/BrainEigenmodes) for the Nature-paper [Geometric Constraints on Human Brain Function](https://www.nature.com/articles/s41586-023-06098-1)
 
 The surface eigenmode computation requires [LaPy](https://github.com/Deep-MI/LaPy/tree/main)
 
