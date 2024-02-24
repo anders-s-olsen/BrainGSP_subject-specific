@@ -4,7 +4,7 @@ A set of python scripts and functions to evaluate eigenmodes of individual and g
 
 ## Organization
 
-Please note that the repository is not organized as a toolbox. The scripts may be freely used and adapted to the user's own needs, but some code adaptations should be expected. 
+Please note that the repository is not organized as a toolbox. The scripts may be freely used and adapted to the user's own needs, but some code adaptations (paths, dataframes, etc) should be expected. 
 
 The repository contains the following key scripts:
 
