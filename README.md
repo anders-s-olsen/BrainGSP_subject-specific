@@ -26,3 +26,9 @@ Some of the work is a direct python translation of the [provided matlab code](ht
 The surface eigenmode computation requires [LaPy](https://github.com/Deep-MI/LaPy/tree/main)
 
 Connectome smoothing was performed using Connectome-spatial-smoothing [(code)](https://github.com/sina-mansour/connectome-spatial-smoothing), [(paper)](https://www.sciencedirect.com/science/article/pii/S1053811922000593)
+
+## Author
+
+Anders S. Olsen
+DTU Compute, Technical University of Denmark
+2023-2024
