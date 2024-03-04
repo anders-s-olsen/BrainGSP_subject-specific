@@ -33,4 +33,4 @@ Anders S. Olsen
 
 DTU Compute, Technical University of Denmark
 
-2023-2024
+Majority of code written while visiting [MIP:Lab](https://miplab.epfl.ch/) in Geneva in the fall of 2023
