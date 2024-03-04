@@ -6,13 +6,13 @@ A set of python scripts and functions to evaluate eigenmodes of individual and g
 
 Please note that the repository is not organized as a toolbox. The scripts may be freely used and adapted to the user's own needs, but some code adaptations (paths, dataframes, etc) should be expected. 
 
-The repository contains the following key scripts:
+The repository contains the following key scripts, in order (ish):
 
-* connectome_eigenmodes.py - thresholds connectome based on desired density, adds a local neighborhood graph, computes eigenmodes of normalized Laplacian
-* connectome_construct_avg.py - computes a group-level connectome
-* connectome_smooth.py - smoothes connectomes using the connectome-spatial-smoothing toolbox
-* connectome_tck_to_npz.py - converts a tractography .tck file to a connectome saved as a numpy file using connectome-spatial-smoothing
 * updated_mrtrix_tractography.sh - computes tractography, [original file here](https://github.com/sina-mansour/neural-identity/blob/master/codes/tractography/updated_mrtrix_tractography.sh)
+* connectome_tck_to_npz.py - converts a tractography .tck file to a connectome saved as a numpy file using connectome-spatial-smoothing
+* connectome_smooth.py - smoothes connectomes using the connectome-spatial-smoothing toolbox
+* connectome_construct_avg.py - computes a group-level connectome
+* connectome_eigenmodes.py - thresholds connectome based on desired density, adds a local neighborhood graph, computes eigenmodes of normalized Laplacian
 * surface_eigenmodes.py - computes surface eigenmodes, [original file here](https://github.com/NSBLab/BrainEigenmodes/blob/main/surface_eigenmodes.py)
 * reconstruct_data4.py - the main code for projecting functional data onto structural basis, discarding some eigenmodes, backprojecting, and evaluating reconstruction accuracy
 * reconstruct_data_sorted.py - same as above, but where the eigenmodes are sorted according to their weight in the "full" 200-eigenmode linear model
