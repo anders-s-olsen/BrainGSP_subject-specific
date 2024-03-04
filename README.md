@@ -30,5 +30,7 @@ Connectome smoothing was performed using Connectome-spatial-smoothing [(code)](h
 ## Author
 
 Anders S. Olsen
+
 DTU Compute, Technical University of Denmark
+
 2023-2024
