@@ -10,11 +10,11 @@ def filter_df(df,exp_settings):
     return df
 
 def make_cols_categorical(df):
-    smooth_vals = ['Unsmoothed','2mm','4mm','6mm','8mm','10mm','none']
+    smooth_vals = ['Unsmoothed','2mm','4mm','6mm','8mm','10mm','12mm','14mm','16mm','18mm','20mm','22mm','24mm','26mm','28mm','30mm','none']
     Binarization_vals = ['Binary','Weighted','none']
     Streamlines_vals = ['5M','10M','20M','50M','none']
     Density_vals = ['0.001%', '0.01%', '0.1%','0.5%', '1%','5%', '10%','none']
-    Basis_vals = ['Individual surface', 'Template surface','Individual connectome','Average connectome', 'Average basis: Flag mean','Average basis: Karcher mean (numerical gradient)', 'Average basis: Karcher mean','Average basis: Procrustes','none','A_local']
+    Basis_vals = ['Individual surface', 'Template surface','Individual connectome','Average connectome', 'Average basis: Flag mean','Average basis: Karcher mean (numerical gradient)', 'Average basis: Karcher mean','Average basis: Procrustes','none','A_local','Random smoothed basis']
     e_local_vals = ['1e-05','1.0','none']
        
     remove_vals = np.zeros(len(smooth_vals),dtype=bool)
@@ -75,8 +75,8 @@ def rename_df(df):
     for id,d in enumerate(old_density_names):
         df['Density (%)'].replace(d, new_density_names[id], inplace=True)
 
-    old_basis_names = ['ind. surface', 'template surface','subject-specific','avg connectome basis', 'avg basis flag','avg basis karcher opt', 'avg basis karcher Begelfor','avg basis procrustes','none','A_local']
-    new_basis_names = ['Individual surface', 'Template surface','Individual connectome','Average connectome', 'Average basis: Flag mean','Average basis: Karcher mean (numerical gradient)', 'Average basis: Karcher mean','Average basis: Procrustes','none','A_local']
+    old_basis_names = ['ind. surface', 'template surface','subject-specific','avg connectome basis', 'avg basis flag','avg basis karcher opt', 'avg basis karcher Begelfor','avg basis procrustes','none','A_local','random_smoothed_basis']
+    new_basis_names = ['Individual surface', 'Template surface','Individual connectome','Average connectome', 'Average basis: Flag mean','Average basis: Karcher mean (numerical gradient)', 'Average basis: Karcher mean','Average basis: Procrustes','none','A_local','Random smoothed basis']
     remove_vals = np.zeros(len(old_basis_names),dtype=bool)
     for id,d in enumerate(old_basis_names):
         if d not in df['Basis'].unique():
@@ -89,8 +89,8 @@ def rename_df(df):
     df['Binarization'].replace('binary','Binary',inplace=True)
     df['Binarization'].replace('weighted','Weighted',inplace=True)
 
-    old_smoothing_names = ['0.0','2.0','4.0','6.0','8.0','10.0','none']
-    new_smoothing_names = ['Unsmoothed','2mm','4mm','6mm','8mm','10mm','none']
+    old_smoothing_names = ['0.0','2.0','4.0','6.0','8.0','10.0','none','2','4','6','8','10','12','14','16','18','20','22','24','26','28','30']
+    new_smoothing_names = ['Unsmoothed','2mm','4mm','6mm','8mm','10mm','none','2mm','4mm','6mm','8mm','10mm','12mm','14mm','16mm','18mm','20mm','22mm','24mm','26mm','28mm','30mm']
     remove_vals = np.zeros(len(old_smoothing_names),dtype=bool)
     for id,d in enumerate(old_smoothing_names):
         if d not in df['Smoothing (FWHM)'].unique():
@@ -100,7 +100,7 @@ def rename_df(df):
     for id,d in enumerate(old_smoothing_names):
         df['Smoothing (FWHM)'].replace(d, new_smoothing_names[id], inplace=True)
 
-    df = make_cols_categorical(df)
+    # df = make_cols_categorical(df)
 
     # df.sort_values(['Density (%)','Smoothing (FWHM)'],inplace=True)
     

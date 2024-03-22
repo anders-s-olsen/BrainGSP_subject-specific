@@ -54,7 +54,7 @@ import os
 def bases_table(num_subs):
     # Define the possible values for each column
     ind_avg = ['ind',str(num_subs)] #can be extended with 100,255, etc
-    density_values = ['1e-05', '0.0001','0.001','0.005','0.01','0.05', '0.1']
+    density_values = ['1e-05', '0.0001','0.001','0.005','0.01','0.05', '0.1','all']
     e_local_values = ['1e-05', '1.0']
     binarization_values = ["binary", "weighted"]
     fwhms = ['0.0','2.0','4.0','6.0','8.0','10.0']
@@ -69,46 +69,67 @@ def bases_table(num_subs):
     combinations = []
     for num_sub in ind_avg:
         for streamlines in streamliness:
-            for density in density_values:
-                for e_local in e_local_values:
-                    for binarization in binarization_values:
-                        if binarization == "binary" and e_local !='1.0':
-                            continue
-                        for fwhm in fwhms:
-                            if fwhm == '0.0':
-                                connectome_file = '_unsmoothed_high_resolution_volumetric_probabilistic_track_endpoints_'+streamlines+'.tck_structural_connectivity.npz'
-                            else:
-                                connectome_file = '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+'.npz'
+            for permute in [False, True]:
+                if permute:
+                    pp = '_permuted'
+                    ppp = 'yes'
+                else:
+                    pp = ''
+                    ppp = 'no'
+                for density in density_values:
+                    for e_local in e_local_values:
+                        for binarization in binarization_values:
+                            if binarization == "binary" and e_local !='1.0':
+                                continue
+                            if permute and streamlines != '20M':
+                                continue
+                            if permute and binarization != "weighted":
+                                continue
+                            if permute and e_local !='1.0':
+                                continue
+                            if permute and density !='all':
+                                continue
 
-                            for basis in basis_values:
-                                if basis == "subject-specific":
-                                    if num_sub!="ind":
-                                        continue
-                                    basis_file = '_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
-                                elif basis == "ind conn/surf avg":
-                                    if num_sub!="ind":
-                                        continue
-                                    basis_file = '_surface_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
-                            
+                            for fwhm in fwhms:
+                                if fwhm == '0.0':
+                                    connectome_file = '_unsmoothed_high_resolution_volumetric_probabilistic_track_endpoints_'+streamlines+'.tck_structural_connectivity'+pp+'.npz'
                                 else:
-                                    if num_sub=="ind":
-                                        continue
-                                    if basis== "avg connectome basis":
-                                        basis_file = 'avg_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
-                                        connectome_file = 'avg_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_'+num_sub+'.npz'
-                                    else:
-                                        basis_file = 'avg_basis_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
-                                combinations.append([num_sub,streamlines,density, e_local, binarization, fwhm, basis,basis_file,connectome_file])
+                                    connectome_file = '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+pp+'.npz'
 
-    combinations.append(['0','none','none', 'none', 'none', 'none', "template surface",'fsLR_32k_midthickness-lh_emode_200.txt',''])
-    combinations.append(['0','none','none', 'none', 'none', 'none', "A_local",'A_local-lh_emode_200.txt',''])
-    combinations.append(['ind','none','none', 'none', 'none', 'none', "ind. surface",'.L.midthickness_MSMAll.32k_fs_LR_emodes.txt',''])
+                                for basis in basis_values:
+                                    if permute and basis != "subject-specific":
+                                        continue
+                                    if basis == "subject-specific":
+                                        if num_sub!="ind":
+                                            continue
+                                        basis_file = '_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+pp+'_emodes.txt'
+                                    elif basis == "ind conn/surf avg":
+                                        if num_sub!="ind":
+                                            continue
+                                        basis_file = '_surface_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
+                                    else:
+                                        if num_sub=="ind":
+                                            continue
+                                        if basis== "avg connectome basis":
+                                            basis_file = 'avg_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
+                                            connectome_file = 'avg_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_'+num_sub+'.npz'
+                                        else:
+                                            basis_file = 'avg_basis_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_elocal'+str(e_local)+'_density'+str(density)+'_'+binarization+'_emodes.txt'
+                                    combinations.append([num_sub,streamlines,density, e_local, binarization, fwhm, basis,ppp,basis_file,connectome_file])
+
+    combinations.append(['0','none','none', 'none', 'none', 'none', "template surface",'no','fsLR_32k_midthickness-lh_emode_200.txt',''])
+    combinations.append(['0','none','none', 'none', 'none', 'none', "A_local",'no','A_local-lh_emode_200.txt',''])
+    combinations.append(['ind','none','none', 'none', 'none', 'none', "ind. surface",'no','.L.midthickness_MSMAll.32k_fs_LR_emodes.txt',''])
+
+    for fwhm in ['0','2','4','6','8','10','12','14','16','18','20','22','24','26','28','30']:#
+        basis_file = 'random_data_'+fwhm+'mm_basis.txt'
+        combinations.append(['ind','none','none', 'none', 'none', fwhm, "random_smoothed_basis",'no',basis_file,''])
 
     # Create the dataframe
-    df = pd.DataFrame(combinations, columns=["num_subs","streamlines","density", "e_local", "binarization", "fwhm", "basis","basis_file","connectome_file"])
+    df = pd.DataFrame(combinations, columns=["num_subs","streamlines","density", "e_local", "binarization", "fwhm", "basis","permuted","basis_file","connectome_file"])
 
     # reorder the columns
-    df = df[["num_subs","streamlines","fwhm", "binarization", "density", "e_local", "basis","basis_file","connectome_file"]]
+    df = df[["num_subs","streamlines","fwhm", "binarization", "density", "e_local", "basis","permuted","basis_file","connectome_file"]]
     df.reset_index(drop=True, inplace=True)
 
     # Save the dataframe as a csv file

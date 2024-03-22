@@ -225,8 +225,8 @@ if __name__ == '__main__':
     
     # do it first for the template surface
     # surface_input_filename='BrainEigenmodes/data/template_surfaces_volumes/fsLR_32k_midthickness-'+hemispheres2+'.vtk'
-    # output_eval_filename = 'results/fsLR_32k_midthickness-lh_eval_'+str(num_modes)+'_2.txt'
-    # output_emode_filename = 'results/fsLR_32k_midthickness-lh_emode_'+str(num_modes)+'_2.txt'
+    # output_eval_filename = 'results/fsLR_32k_midthickness-lh_eval_'+str(num_modes)+'.txt'
+    # output_emode_filename = 'results/fsLR_32k_midthickness-lh_emode_'+str(num_modes)+'.txt'
     # calc_surface_eigenmodes(surface_input_filename, mask_input_filename, output_eval_filename, output_emode_filename, save_cut, num_modes)
 
     # subjectlist1=np.loadtxt('subjectlists/subject_list_HCP_255.txt')

@@ -36,6 +36,15 @@ def check_eigenmode_exists(num_subs):
         elif row.basis in ['avg connectome basis','avg basis flag','avg basis karcher opt','avg basis karcher Begelfor','avg basis procrustes']:
             if os.path.exists('results/avg_connectomes/'+str(row.basis_file)[:-4]+'_'+str(num_subs)+'.txt'):
                 df.loc[idx,'exists'] = True
+        elif row.basis in ['random_smoothed_basis']:
+            allex = []
+            for sub in subject_list:
+                if os.path.exists('data/'+str(sub)+'/T1w/random_data/'+row.basis_file):
+                    allex.append(True)
+                else:
+                    allex.append(False)
+            if all(allex):
+                df.loc[idx,'exists'] = True
     
     df.to_csv('basis_experiments_table'+str(num_subs)+'.csv',index=False)
 

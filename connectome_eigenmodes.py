@@ -94,18 +94,22 @@ def compute_eigenmodes(L_norm, num_eigenmodes=200):
 
     return evals,emodes
 
-def run_connectome_decomposition(A_local, connectome_filename,e_local=1,desired_density=0.1,binary=True,output_file=None):
+def run_connectome_decomposition(A_local, connectome_filename,e_local=1,desired_density=0.1,binary=True,output_file=None,num_modes=200):
 
     try:
         W = scipy.sparse.load_npz(connectome_filename)
     except:
         raise ValueError('Could not load connectome for' + connectome_filename)
     
+    if scipy.sparse.linalg.norm(W - W.T)>1e-10:
+        print('Matrix is not symmetric for subject ' + connectome_filename)
+        return
+
     # extract only left hemisphere
     W = W[:29696, :29696]
     connectome_checks(W)
 
-    if desired_density!='0.0':
+    if desired_density!='0.0' and desired_density!='all':
         try:
             W = threshold_edges_density(W, desired_density=desired_density, weight_to_remove='weakest') 
         except:
@@ -118,7 +122,7 @@ def run_connectome_decomposition(A_local, connectome_filename,e_local=1,desired_
         A_combined[A_combined>0] = 1
     L_norm = compute_normalized_laplacian(A_combined)
     try:
-        evals,emodes=compute_eigenmodes(L_norm, num_eigenmodes=200)
+        evals,emodes=compute_eigenmodes(L_norm, num_eigenmodes=num_modes)
     except:
         print('Could not compute eigenmodes for subject ' + connectome_filename)
         return
@@ -127,7 +131,7 @@ def run_connectome_decomposition(A_local, connectome_filename,e_local=1,desired_
     print('Saving eigenmodes')
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     np.savetxt(output_file, emodes)
-    np.savetxt(output_file[:-8]+'_evals.txt', evals)
+    # np.savetxt(output_file[:-8]+'_evals.txt', evals)
 
     return compute_density(A_combined)
 
@@ -164,32 +168,30 @@ if __name__ == '__main__':
     surface_file = 'BrainEigenmodes/data/template_surfaces_volumes/fsLR_32k_midthickness-lh.vtk'
     mask_file = 'BrainEigenmodes/data/template_surfaces_volumes/fsLR_32k_cortex-lh_mask.txt'
     A_local = construct_A_local(surface_file,mask_file)
-    npz_file = 'avg_structural_connectome_20M_fwhm0.0_100.npz'
-    output_file = 'avg_structural_connectome_20M_fwhm0.0_100_emodes.txt'
+    # npz_file = 'avg_structural_connectome_20M_fwhm0.0_100.npz'
+    # output_file = 'avg_structural_connectome_20M_fwhm0.0_100_emodes.txt'
     # npz_file = '100307_unsmoothed_high_resolution_volumetric_probabilistic_track_endpoints_20M.tck_structural_connectivity.npz'
     # output_file = '100307_structural_connectome_20M_fwhm0.0_emodes.txt'
-    main(A_local=A_local,num_subs=100,subject_specific=False,e_local='1.0',desired_density='0.001',binary=False,npz_file=npz_file,output_file=output_file)
-    # True
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--num_subs', type=int, default=100)
-    # parser.add_argument('--reverse_order', type=bool, default=False)
-    # args = parser.parse_args()
-    # num_subs = args.num_subs
-    # reverse_order = args.reverse_order
+    # main(A_local=A_local,num_subs=100,subject_specific=False,e_local='1.0',desired_density='0.001',binary=False,npz_file=npz_file,output_file=output_file)
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--num_subs', type=int, default=100)
+    parser.add_argument('--reverse_order', type=bool, default=False)
+    args = parser.parse_args()
+    num_subs = args.num_subs
+    reverse_order = args.reverse_order
 
-    # df = pd.read_csv('basis_experiments_table.csv')
-    # df = df[df['basis'].isin(['avg connectome basis'])]#'subject-specific',
-    # df = df[df['e_local'].isin(['1.0'])]
-    # df = df[df['streamlines'].isin(['20M'])]#'5M','10M',
+    df = pd.read_csv('basis_experiments_table'+str(num_subs)+'.csv')
+    df = df[df['basis'].isin(['subject-specific'])]#,
+    df = df[df['e_local'].isin(['1.0'])]
+    df = df[df['streamlines'].isin(['20M'])]#'5M','10M',
+    df = df[df['permuted'].isin(['yes'])]
 
+    # reverse order of df
+    if reverse_order:
+        df = df.iloc[::-1]
+        print('Reversed order of df')
 
-
-
-    # # reverse order of df
-    # if reverse_order:
-    #     df = df.iloc[::-1]
-    #     print('Reversed order of df')
-
-    # for index, row in df.iterrows():
-    #     print('Running connectome decomposition for num_sub'+str(num_subs)+' fwhm '+row['fwhm']+' binarization '+row['binarization']+' density '+row['density']+' elocal '+row['e_local']+' basis '+row['basis'])
-    #     main(A_local=A_local,num_subs=num_subs,subject_specific = row['basis']=='subject-specific',e_local=row['e_local'],desired_density=row['density'],binary=row['binarization']=='binary',npz_file=row['connectome_file'],output_file=row['basis_file'])
+    for index, row in df.iterrows():
+        print('Running connectome decomposition for num_sub'+str(num_subs)+' fwhm '+row['fwhm']+' binarization '+row['binarization']+' density '+row['density']+' elocal '+row['e_local']+' basis '+row['basis'])
+        main(A_local=A_local,num_subs=num_subs,subject_specific = row['basis']=='subject-specific',e_local=row['e_local'],desired_density=row['density'],binary=row['binarization']=='binary',npz_file=row['connectome_file'],output_file=row['basis_file'])

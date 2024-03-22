@@ -4,7 +4,7 @@ import scipy
 from Connectome_Spatial_Smoothing import CSS as css
 import argparse
 
-def smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,streamlines='5M'):
+def smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,streamlines='5M',permute=False):
     try:
         npz_file = os.path.join(npz_path, subject + '/T1w/tractography/' \
                         + subject + '_unsmoothed_high_resolution_volumetric_probabilistic_track_endpoints_'+streamlines+'.tck_structural_connectivity.npz')
@@ -13,6 +13,14 @@ def smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,
     except:
         print('Could not load unsmoothed connectome for subject ' + subject)
         return
+    
+    if permute:
+        # high_resolution_connectome = np.random.permutation(high_resolution_connectome)
+        # permute vertices of connectome
+        perm = np.random.permutation(59412)
+        high_resolution_connectome = high_resolution_connectome[perm,:]
+        high_resolution_connectome = high_resolution_connectome[:,perm]
+
     left_surface_file = 'data/'+subject+'/T1w/fsaverage_LR32k/'+subject+'.L.white_MSMAll.32k_fs_LR.surf.gii'
     right_surface_file = 'data/'+subject+'/T1w/fsaverage_LR32k/'+subject+'.R.white_MSMAll.32k_fs_LR.surf.gii'
 
@@ -23,22 +31,25 @@ def smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,
             smoothed_high_resolution_connectome.multiply(smoothed_high_resolution_connectome > float(post_smoothing_threshold))
         
         # save the last variable as a scipy sparse matrix
-        scipy.sparse.save_npz(npz_path + subject + '/T1w/tractography/' + subject + \
-            '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+'.npz',\
-                thresholded_smoothed_high_resolution_connectome)
+        if permute:
+            scipy.sparse.save_npz(npz_path + subject + '/T1w/tractography/' + subject + \
+                '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+'_permuted.npz',\
+                    thresholded_smoothed_high_resolution_connectome)
+        else:   
+            scipy.sparse.save_npz(npz_path + subject + '/T1w/tractography/' + subject + \
+                '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+'.npz',\
+                    thresholded_smoothed_high_resolution_connectome)
     else:
         # save the last variable as a scipy sparse matrix
         scipy.sparse.save_npz(npz_path + subject + '/T1w/' + subject + \
             '_smoothed_structural_connectome_'+streamlines+'_fwhm'+fwhm+'.npz',\
                 smoothed_high_resolution_connectome)
     
-    
-
 def main(num_subs):
 
     # Load subject list
     subject_list=np.loadtxt('subjectlists/subject_list_HCP_'+str(num_subs)+'.txt',dtype=str) #made from Pang-255 because no connectome for three subjects
-    subject_list = subject_list[::-1]
+    # subject_list = subject_list[::-1]
     # Define path to npz files
     npz_path = 'data/'
 
@@ -47,18 +58,25 @@ def main(num_subs):
     streamliness = ['20M']#['5M','10M','20M']
 
     # Define path to save the average connectome
-    for subject in subject_list:
+    # for permute in [False, True]:
+    permute = True
+    for subject in subject_list[:50]:
         for streamlines in streamliness:
             for fwhm in fwhms:
-                npz_file = os.path.join(npz_path, subject + '/T1w/tractography/' \
+                if permute:
+                    npz_file = os.path.join(npz_path, subject + '/T1w/tractography/' \
+                                        + subject + '_smoothed_structural_connectome_'+streamlines+'_fwhm'\
+                                            +fwhm+'_permuted.npz')
+                else:
+                    npz_file = os.path.join(npz_path, subject + '/T1w/tractography/' \
                                         + subject + '_smoothed_structural_connectome_'+streamlines+'_fwhm'\
                                             +fwhm+'.npz')
-                if os.path.exists(npz_file):
-                    print('Found smoothed connectome for subject ' + subject, fwhm  + ' streamlines ' + streamlines)
-                    continue
-                else:
-                    print('Could not load smoothed connectome for subject ' + subject+', will try to compute it')
-                    smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,streamlines=streamlines)
+                # if os.path.exists(npz_file):
+                #     print('Found smoothed connectome for subject ' + subject, fwhm  + ' streamlines ' + streamlines)
+                #     continue
+                # else:
+                print('Could not load smoothed connectome for subject ' + subject+', will try to compute it')
+                smooth_connectome_and_save(npz_path,subject, fwhm, post_smoothing_threshold,streamlines=streamlines,permute=permute)
 
                 print('Done smoothing connectome for subject ' + subject+' fwhm'+str(fwhm))
             

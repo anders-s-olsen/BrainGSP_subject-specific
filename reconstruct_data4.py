@@ -13,6 +13,7 @@ def filter_df(df,exp_settings):
     df = df[df.binarization.isin(exp_settings['binarization'])]
     df = df[df.fwhm.isin(exp_settings['fwhm'])]
     df = df[df.streamlines.isin(exp_settings['streamlines'])]
+    df = df[df.permuted.isin(exp_settings['permuted'])]
     return df
 
 def load_bases(df,subject=None,mask=None,num_subs=None):
@@ -28,6 +29,8 @@ def load_bases(df,subject=None,mask=None,num_subs=None):
             filename = 'data/'+subject+'/T1w/tractography_eigenmodes/'+subject+loc
             if not os.path.exists(filename):
                 filename = 'data/'+subject+'/T1w/fsaverage_LR32k/'+subject+loc
+            if not os.path.exists(filename):
+                filename = 'data/'+subject+'/T1w/random_data/'+loc
             if not os.path.exists(filename):
                 raise ValueError('Could not find basis file for subject '+subject+loc)
         else:
@@ -255,11 +258,12 @@ if __name__ == '__main__':
     parser.add_argument('--num_subs', type=int, default=100, help='number of subjects')
     args = parser.parse_args()
     contrasts = np.loadtxt('contrast_list.txt',dtype=str)
-    exp_settings = {'density':['1e-05', '0.0001', '0.001','0.005', '0.01','0.05','0.1','none'],#
+    exp_settings = {'density':['1e-05', '0.0001', '0.001','0.005', '0.01','0.05','0.1','none','all'],#
                     'e_local':['1.0','none'],
+                    'permuted':['no','yes'],#,'yes
                     'binarization':['binary','weighted','none'],
-                    'fwhm':['0.0','2.0','4.0','6.0','8.0','10.0','none'],#,
-                    'basis':['subject-specific','avg connectome basis'],#,'subject-specific','avg connectome basis','A_local','ind. surface','template surface'
+                    'fwhm':['0.0','2.0','4.0','6.0','8.0','10.0','none','0','2','4','6','8','10','12','14','16','18','20','22','24','26','28','30'],#,
+                    'basis':['subject-specific','random_smoothed_basis','A_local'],#,'subject-specific','avg connectome basis','A_local','ind. surface','template surface','random_smoothed_basis'
                     'contrasts':'SSBCAP',#SSBCAP,47task
                     'streamlines':['20M','none']}#,'5M','20M'
     main(num_subs=args.num_subs,exp_settings=exp_settings)
