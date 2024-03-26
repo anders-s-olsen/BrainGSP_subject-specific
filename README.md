@@ -14,7 +14,7 @@ The repository contains the following key scripts, in order (ish):
 * connectome_construct_avg.py - computes a group-level connectome
 * connectome_eigenmodes.py - thresholds connectome based on desired density, adds a local neighborhood graph, computes eigenmodes of normalized Laplacian
 * surface_eigenmodes.py - computes surface eigenmodes, [original file here](https://github.com/NSBLab/BrainEigenmodes/blob/main/surface_eigenmodes.py)
-* reconstruct_data4.py - the main code for projecting functional data onto structural basis, discarding some eigenmodes, backprojecting, and evaluating reconstruction accuracy
+* reconstruct_data4.py - the main code for projecting functional data onto structural basis, discarding some eigenmodes, backprojecting, and evaluating reconstruction accuracy. Note that if evaluating geometric basis through the Laplace-Beltrami operator, the weight-computation line should be altered to apply to a non-orthonormal basis.
 * reconstruct_data_sorted.py - same as above, but where the eigenmodes are sorted according to their weight in the "full" 200-eigenmode linear model
 * recon_accuracy_analysis.ipynb - plots of reconstruction accuracies
 * brainmaps.ipynb - brain visualizations for methods figure
